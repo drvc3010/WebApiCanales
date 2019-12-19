@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using WebApiCanales.Clases;
 
 namespace WebApiCanales.Controllers
 {
@@ -12,16 +13,30 @@ namespace WebApiCanales.Controllers
     {
         // GET api/values
         [HttpGet]
-        public ActionResult<IEnumerable<string>> Get()
+        public ActionResult<string> Get( string option)
         {
-            return new string[] { "value1", "value2" };
+
+            Constantes ct = new Constantes();
+            string result_val = "";
+            int result = ct.InsertDataSqlServer(option);
+            if (result > 0)
+            {
+                result_val = "Gracias por tu participación.";
+            } else
+            {
+                result_val = "Hubo un error al registrar tu opción.";
+            }
+
+
+            return result_val;
         }
 
         // GET api/values/5
         [HttpGet("{id}")]
         public ActionResult<string> Get(int id)
         {
-            return "value";
+          
+            return (5 * id).ToString();
         }
 
         // POST api/values
@@ -34,6 +49,7 @@ namespace WebApiCanales.Controllers
         [HttpPut("{id}")]
         public void Put(int id, [FromBody] string value)
         {
+
         }
 
         // DELETE api/values/5
