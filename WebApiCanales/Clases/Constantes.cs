@@ -28,14 +28,17 @@ namespace WebApiCanales.Clases
             cn.Close();
             if (dt.Rows.Count <=0)
             {
-                result = "no se encontro informacion sobre el caodigo de cajero ingresado.";
+                result = "no se encontro informacion sobre el código de cajero ingresado.";
             }
 
             else
             {
                 
-              result = "Problema : " + dt.Rows[0]["Problem"].ToString() + "\n" +
-                       "Descripción : " + dt.Rows[0]["Summary"].ToString();
+              result = "Problema : " + dt.Rows[0]["Problem"].ToString() + " || " +
+                        "Estado Ticket : " + dt.Rows[0]["Status"].ToString() + " || " +
+                       "Descripción : " + dt.Rows[0]["Summary"].ToString() + " || " +
+                       "Asignado a : " + dt.Rows[0]["Assigned"].ToString() + " || " +
+                       "Territorio ATM : " + dt.Rows[0]["Summary"].ToString();
             }
             return result;
            // return dt;
@@ -57,6 +60,25 @@ namespace WebApiCanales.Clases
             }*/
 
             return result;
+        }
+
+        public int RegisterTicketATM(string IdCajero , string CodRegistro , string NomUser , string Categoria , string SubCat , string Descripcion)
+        {
+            int result = 0;
+            SqlConnection con = new SqlConnection(SQLSERVERCONNECTION);
+            SqlCommand cmd = new SqlCommand("SPI_TICKET_ATM", con);
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.AddWithValue("@idcajero", IdCajero);
+            cmd.Parameters.AddWithValue("@codigoregistro", CodRegistro);
+            cmd.Parameters.AddWithValue("@nombreusuario", NomUser);
+            cmd.Parameters.AddWithValue("@categoria", Categoria);
+            cmd.Parameters.AddWithValue("@subcategoria", SubCat);
+            cmd.Parameters.AddWithValue("@descripcion", Descripcion);
+            con.Open();
+            result = cmd.ExecuteNonQuery();
+            con.Close();
+            return result;
+
         }
     }
 }
