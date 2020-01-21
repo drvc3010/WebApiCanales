@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+﻿using System.Net;
+using System.Net.Http;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json.Linq;
 using WebApiCanales.Clases;
 
 namespace WebApiCanales.Controllers
@@ -12,13 +10,18 @@ namespace WebApiCanales.Controllers
     [ApiController]
     public class ticketController : ControllerBase
     {
+    
         // GET: api/ticket
         [HttpGet]
-        public string  Get(string  idATM)
+        public JObject Get(string  idATM)
         {
             Constantes ct = new Constantes();
-            string result = ct.ticketDetail(idATM);
-            return result;
+            ConsultaTicket result = ct.ticketDetail(idATM);
+            var jsonString = Newtonsoft.Json.JsonConvert.SerializeObject(result);
+            JObject json = JObject.Parse(jsonString);
+            return json;
+
+
         }
 
         // GET: api/ticket/5

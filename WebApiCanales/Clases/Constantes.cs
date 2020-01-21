@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
+﻿using System.Data;
 using System.Data.SqlClient;
-using System.Linq;
-using System.Threading.Tasks;
+
+
 
 namespace WebApiCanales.Clases
 {
@@ -13,10 +11,9 @@ namespace WebApiCanales.Clases
         private const string SQLSERVERCONNECTION = "Server = sql5046.site4now.net; Database = DB_A4F54F_dd; User Id = DB_A4F54F_dd_admin;Password = bbva2019;";
 
 
-        public string  ticketDetail(string idATM)
+        public ConsultaTicket ticketDetail(string idATM)
         {
-            string result = "";
-            string problema = "", descripcion = "", subcategoria = "";
+            ConsultaTicket cst = new ConsultaTicket();
             SqlConnection cn = new SqlConnection(SQLSERVERCONNECTION);
             cn.Open();
             SqlDataAdapter dap = new SqlDataAdapter("SPS_TICKET_ATM_BY_ID", cn);
@@ -28,20 +25,28 @@ namespace WebApiCanales.Clases
             cn.Close();
             if (dt.Rows.Count <=0)
             {
-                result = "no se encontro informacion sobre el código de cajero ingresado.";
+                cst.problema = "no se encontro informacion sobre el código de cajero ingresado.";
+                
             }
 
             else
             {
-                
-              result = "Problema : " + dt.Rows[0]["Problem"].ToString() + " || " +
-                        "Estado Ticket : " + dt.Rows[0]["Status"].ToString() + " || " +
-                       "Descripción : " + dt.Rows[0]["Summary"].ToString() + " || " +
-                       "Asignado a : " + dt.Rows[0]["Assigned"].ToString() + " || " +
-                       "Territorio ATM : " + dt.Rows[0]["Summary"].ToString();
+              
+                cst.problema = dt.Rows[0]["Problem"].ToString();
+                cst.estadoTicket = dt.Rows[0]["Status"].ToString();
+                cst.descripcion = dt.Rows[0]["Summary"].ToString();
+                cst.asignado = dt.Rows[0]["Assigned"].ToString();
+                cst.territorioATM = dt.Rows[0]["TERRITORIO"].ToString();
+                cst.marca = dt.Rows[0]["Marca"].ToString();
+                cst.direccion = dt.Rows[0]["Direccion"].ToString();
+                cst.ubicacion = dt.Rows[0]["Ubicacion"].ToString();
+                cst.nombreOficina = dt.Rows[0]["NOMBRE"].ToString();
+                cst.urlMap = dt.Rows[0]["urlMap"].ToString();
+              
+               
             }
-            return result;
-           // return dt;
+            
+            return cst;
         }
         public int InsertDataSqlServer(string data)
         {
@@ -53,18 +58,13 @@ namespace WebApiCanales.Clases
             con.Open();
             result = cmd.ExecuteNonQuery();
             con.Close();
-            /*if (k != 0)
-            {
-                lblmsg.Text = "Record Inserted Succesfully into the Database";
-                lblmsg.ForeColor = System.Drawing.Color.CornflowerBlue;
-            }*/
-
             return result;
         }
 
-        public int RegisterTicketATM(string IdCajero , string CodRegistro , string NomUser , string Categoria , string SubCat , string Descripcion)
+        public string RegisterTicketATM(string IdCajero , string CodRegistro , string NomUser , string Categoria , string SubCat , string Descripcion)
         {
             int result = 0;
+            string val = "";
             SqlConnection con = new SqlConnection(SQLSERVERCONNECTION);
             SqlCommand cmd = new SqlCommand("SPI_TICKET_ATM", con);
             cmd.CommandType = CommandType.StoredProcedure;
@@ -76,8 +76,18 @@ namespace WebApiCanales.Clases
             cmd.Parameters.AddWithValue("@descripcion", Descripcion);
             con.Open();
             result = cmd.ExecuteNonQuery();
+
+            if (result > 0)
+            {
+                val = "Se registro correctamente su ticket, en breve nos cantactaremos con usted.";
+            }
+            else
+            {
+                val = "No se pudo registrar su ticket, por favor intentelo nuevamente.";
+            }
+
             con.Close();
-            return result;
+            return val;
 
         }
     }
